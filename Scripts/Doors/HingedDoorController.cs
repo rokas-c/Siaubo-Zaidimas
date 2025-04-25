@@ -6,16 +6,19 @@ public class HingedDoorController : MonoBehaviour
     public bool isLockedByPunchIn = false;
     
     private HingeJoint hingeJoint;
-    private JointLimits originalLimits;
+    private Rigidbody doorRigidbody;
+    private bool wasKinematic; // Store original kinematic state
     
     void Start()
     {
         hingeJoint = GetComponent<HingeJoint>();
+        doorRigidbody = GetComponent<Rigidbody>();
         
-        if (hingeJoint == null)
+        if (doorRigidbody == null)
             return;
-        
-        originalLimits = hingeJoint.limits;
+            
+        // Store the original kinematic state
+        wasKinematic = doorRigidbody.isKinematic;
         
         if (startLocked)
         {
@@ -24,27 +27,25 @@ public class HingedDoorController : MonoBehaviour
     }
     
     public void LockDoor(bool isPunchIn = false)
-{
-    if (hingeJoint != null)
     {
-        JointLimits frozenLimits = new JointLimits();
-        float currentAngle = hingeJoint.angle;
-        frozenLimits.min = currentAngle;
-        frozenLimits.max = currentAngle;
-        
-        hingeJoint.limits = frozenLimits;
-        hingeJoint.useLimits = true;
-        
-        // Set the flag if locked by punch-in.
-        isLockedByPunchIn = isPunchIn;
+        if (doorRigidbody != null)
+        {
+            // Simply make the door kinematic (static)
+            doorRigidbody.linearVelocity = Vector3.zero;
+            doorRigidbody.angularVelocity = Vector3.zero;
+            doorRigidbody.isKinematic = true;
+            
+            // Set the flag if locked by punch-in
+            isLockedByPunchIn = isPunchIn;
+        }
     }
-}
     
     public void UnlockDoor()
     {
-        if (hingeJoint != null)
+        if (doorRigidbody != null)
         {
-            hingeJoint.limits = originalLimits;
+            // Return to the original kinematic state
+            doorRigidbody.isKinematic = wasKinematic;
         }
     }
 }

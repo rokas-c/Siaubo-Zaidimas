@@ -3,44 +3,113 @@ using UnityEngine;
 public class BroomAction : MonoBehaviour
 {
     public GameObject PickUpText;
+    public GameObject PutDownText;
     public GameObject BroomOnPlayer;
-    public GameObject NotPunchedInText;
+    public GameObject BroomPlacementLocation;
     
     private bool isPlayerNearby = false;
+    private bool isBroomPickedUp = false;
+    
+    // For debugging
+    public bool debugMode = false;
     
     void Start()
     {
         BroomOnPlayer.SetActive(false);
         PickUpText.SetActive(false);
-        if (NotPunchedInText != null)
-            NotPunchedInText.SetActive(false);
+        if (PutDownText != null)
+            PutDownText.SetActive(false);
     }
     
     void Update()
     {
         if (isPlayerNearby)
         {
-            // Check the static variable from PunchInAction.
+            bool canPutDown = false;
+            
+            // Check if all puddles are cleaned
+            if (GameManager.Instance != null)
+            {
+                canPutDown = GameManager.Instance.AreAllPuddlesCleaned();
+                if (debugMode)
+                {
+                }
+            }
+            
+            // Check the static variable from PunchInAction
             if (PunchInAction.HasPunchedIn)
             {
-                PickUpText.SetActive(true);
-                if (NotPunchedInText != null)
-                    NotPunchedInText.SetActive(false);
-                
-                if (Input.GetKeyDown(KeyCode.E))
+                if (!isBroomPickedUp)
                 {
-                    this.gameObject.SetActive(false);
-                    BroomOnPlayer.SetActive(true);
+                    // Show pick up text if broom isn't picked up
+                    PickUpText.SetActive(true);
+                    if (PutDownText != null)
+                        PutDownText.SetActive(false);
+                    
+                    if (Input.GetKeyDown(KeyCode.E))
+                    {
+                        PickUpBroom();
+                    }
+                }
+                else if (canPutDown || debugMode) // Only allow putting down if all puddles are cleaned OR in debug mode
+                {
+                    // Show put down text if all puddles are cleaned
                     PickUpText.SetActive(false);
+                    if (PutDownText != null)
+                        PutDownText.SetActive(true);
+                    
+                    if (Input.GetKeyDown(KeyCode.E))
+                    {
+                        PutDownBroom();
+                    }
+                }
+                else
+                {
+                    // Broom is picked up but can't be put down yet
+                    PickUpText.SetActive(false);
+                    if (PutDownText != null)
+                        PutDownText.SetActive(false);
                 }
             }
             else
             {
                 PickUpText.SetActive(false);
-                if (NotPunchedInText != null)
-                    NotPunchedInText.SetActive(true);
+                if (PutDownText != null)
+                    PutDownText.SetActive(false);
             }
         }
+    }
+    
+    private void PickUpBroom()
+    {
+        this.gameObject.SetActive(false);
+        BroomOnPlayer.SetActive(true);
+        PickUpText.SetActive(false);
+        isBroomPickedUp = true;
+    }
+    
+    private void PutDownBroom()
+    {
+        Debug.Log("Putting down broom");
+        
+        // Place the broom at the designated location if specified
+        if (BroomPlacementLocation != null)
+        {
+            transform.position = BroomPlacementLocation.transform.position;
+            transform.rotation = BroomPlacementLocation.transform.rotation;
+        }
+        
+        this.gameObject.SetActive(true);
+        BroomOnPlayer.SetActive(false);
+        if (PutDownText != null)
+            PutDownText.SetActive(false);
+        isBroomPickedUp = false;
+        
+        // Disable this script and the collider so the broom can't be picked up again
+        if (GetComponent<Collider>() != null)
+            GetComponent<Collider>().enabled = false;
+        
+        this.enabled = false;
     }
     
     private void OnTriggerEnter(Collider other)
@@ -57,8 +126,8 @@ public class BroomAction : MonoBehaviour
         {
             isPlayerNearby = false;
             PickUpText.SetActive(false);
-            if (NotPunchedInText != null)
-                NotPunchedInText.SetActive(false);
+            if (PutDownText != null)
+                PutDownText.SetActive(false);
         }
     }
 }

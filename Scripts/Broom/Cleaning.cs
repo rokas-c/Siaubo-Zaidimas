@@ -4,7 +4,7 @@ using System.Collections;
 public class Cleaning : MonoBehaviour
 {
     private GameObject broom;
-    public float fadeOutTime = 5f; // How long the fadeout takes in seconds
+    public float fadeOutTime = 1.5f; // How long the fadeout takes in seconds
     
     private SpriteRenderer spriteRenderer;
     private Collider2D trashCollider;
@@ -12,6 +12,7 @@ public class Cleaning : MonoBehaviour
     
     void Start()
     {
+        Debug.Log("ClickableTrash initialized: " + gameObject.name);
         // Find the broom object in the scene
         broom = GameObject.FindWithTag("Broom");
         
@@ -31,10 +32,12 @@ public class Cleaning : MonoBehaviour
         if (IsBroomPickedUp() && !isFading)
         {
             // Start fade out instead of immediate destruction
+            Debug.Log("Trash clicked and fading out: " + gameObject.name);
             StartCoroutine(FadeOutAndDestroy());
         }
         else if (!isFading)
         {
+            Debug.Log("Need to pick up the broom first!");
         }
     }
     
@@ -89,6 +92,12 @@ public class Cleaning : MonoBehaviour
             
             // Make sure alpha is zero
             spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
+        }
+        
+        // Notify the GameManager that a puddle was cleaned if this has the Puddle tag
+        if (gameObject.CompareTag("Puddle") && GameManager.Instance != null)
+        {
+            GameManager.Instance.PuddleCleaned();
         }
         
         // Finally destroy the object after fading
