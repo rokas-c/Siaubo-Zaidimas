@@ -35,7 +35,7 @@ public class HingedDoorController : MonoBehaviour
         hingeJoint.limits = frozenLimits;
         hingeJoint.useLimits = true;
         
-        // Set the flag if locked by punch-in
+        // Set the flag if locked by punch-in.
         isLockedByPunchIn = isPunchIn;
     }
 }

@@ -20,7 +20,7 @@ public class BroomAction : MonoBehaviour
     {
         if (isPlayerNearby)
         {
-            // Check the static variable from PunchInAction
+            // Check the static variable from PunchInAction.
             if (PunchInAction.HasPunchedIn)
             {
                 PickUpText.SetActive(true);
