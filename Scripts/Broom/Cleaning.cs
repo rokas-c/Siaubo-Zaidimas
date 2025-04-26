@@ -12,7 +12,6 @@ public class Cleaning : MonoBehaviour
     
     void Start()
     {
-        Debug.Log("ClickableTrash initialized: " + gameObject.name);
         // Find the broom object in the scene
         broom = GameObject.FindWithTag("Broom");
         
@@ -32,12 +31,7 @@ public class Cleaning : MonoBehaviour
         if (IsBroomPickedUp() && !isFading)
         {
             // Start fade out instead of immediate destruction
-            Debug.Log("Trash clicked and fading out: " + gameObject.name);
             StartCoroutine(FadeOutAndDestroy());
-        }
-        else if (!isFading)
-        {
-            Debug.Log("Need to pick up the broom first!");
         }
     }
     

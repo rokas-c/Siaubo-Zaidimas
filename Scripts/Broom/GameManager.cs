@@ -42,19 +42,16 @@ public class GameManager : MonoBehaviour
         // Count all puddles in the scene
         GameObject[] puddles = GameObject.FindGameObjectsWithTag("Puddle");
         totalPuddles = puddles.Length;
-        Debug.Log("Total puddles to clean: " + totalPuddles);
     }
     
     // Call this method when a puddle is cleaned
     public void PuddleCleaned()
     {
         cleanedPuddles++;
-        Debug.Log("Puddle cleaned! " + cleanedPuddles + "/" + totalPuddles);
         
         // Check if all puddles are cleaned
         if (cleanedPuddles >= totalPuddles && totalPuddles > 0)
         {
-            Debug.Log("All puddles have been cleaned!");
             onAllPuddlesCleaned.Invoke();
         }
     }
@@ -68,7 +65,6 @@ public class GameManager : MonoBehaviour
     // Called when the broom task is completed
     public void BroomTaskCompleted()
     {
-        Debug.Log("Broom task completed!");
         
         // Invoke the event
         if (onBroomTaskCompleted != null)

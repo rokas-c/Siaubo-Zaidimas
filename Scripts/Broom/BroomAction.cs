@@ -10,9 +10,6 @@ public class BroomAction : MonoBehaviour
     private bool isPlayerNearby = false;
     private bool isBroomPickedUp = false;
     
-    // For debugging
-    public bool debugMode = false;
-    
     void Start()
     {
         BroomOnPlayer.SetActive(false);
@@ -31,9 +28,6 @@ public class BroomAction : MonoBehaviour
             if (GameManager.Instance != null)
             {
                 canPutDown = GameManager.Instance.AreAllPuddlesCleaned();
-                if (debugMode)
-                {
-                }
             }
             
             // Check the static variable from PunchInAction
@@ -51,7 +45,7 @@ public class BroomAction : MonoBehaviour
                         PickUpBroom();
                     }
                 }
-                else if (canPutDown || debugMode) // Only allow putting down if all puddles are cleaned OR in debug mode
+                else if (canPutDown) // Only allow putting down if all puddles are cleaned OR in debug mode
                 {
                     // Show put down text if all puddles are cleaned
                     PickUpText.SetActive(false);
@@ -90,7 +84,6 @@ public class BroomAction : MonoBehaviour
     
     private void PutDownBroom()
     {
-        Debug.Log("Putting down broom");
         
         // Place the broom at the designated location if specified
         if (BroomPlacementLocation != null)

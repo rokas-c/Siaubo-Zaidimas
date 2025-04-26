@@ -8,6 +8,9 @@ public class BroomPlacementZone : MonoBehaviour
     public GameObject placementPromptText; // UI text to show when player can place the broom
     public Transform broomFinalPosition; // Where to place the broom when returned
     
+    [Header("Jumpscare Reference")]
+    public BroomJumpscareTrigger jumpscareTrigger; // Reference to the jumpscare trigger script
+    
     private bool playerInZone = false;
     private bool allPuddlesCleaned = false;
     private bool broomPlaced = false;
@@ -20,6 +23,12 @@ public class BroomPlacementZone : MonoBehaviour
             
         // Find all puddles at start
         RefreshPuddleCount();
+        
+        // Find the jumpscare trigger if not assigned
+        if (jumpscareTrigger == null)
+        {
+            jumpscareTrigger = FindObjectOfType<BroomJumpscareTrigger>();
+        }
     }
     
     void Update()
@@ -79,7 +88,6 @@ public class BroomPlacementZone : MonoBehaviour
     
     void PlaceBroom()
     {
-        
         // Hide the broom on player
         broomOnPlayerObject.SetActive(false);
         
@@ -121,6 +129,12 @@ public class BroomPlacementZone : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.BroomTaskCompleted();
+        }
+        
+        // Trigger the jumpscare
+        if (jumpscareTrigger != null)
+        {
+            jumpscareTrigger.OnBroomPlaced();
         }
     }
     
