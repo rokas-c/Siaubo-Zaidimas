@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour
     // Event that will be triggered when all puddles are cleaned
     public UnityEvent onAllPuddlesCleaned;
     
+    // Event for broom task completion
+    public UnityEvent onBroomTaskCompleted;
+    
     private int totalPuddles;
     private int cleanedPuddles = 0;
     
@@ -26,9 +29,12 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         
-        // Initialize the event if null
+        // Initialize the events if null
         if (onAllPuddlesCleaned == null)
             onAllPuddlesCleaned = new UnityEvent();
+            
+        if (onBroomTaskCompleted == null)
+            onBroomTaskCompleted = new UnityEvent();
     }
     
     void Start()
@@ -57,6 +63,16 @@ public class GameManager : MonoBehaviour
     public bool AreAllPuddlesCleaned()
     {
         return cleanedPuddles >= totalPuddles && totalPuddles > 0;
+    }
+    
+    // Called when the broom task is completed
+    public void BroomTaskCompleted()
+    {
+        Debug.Log("Broom task completed!");
+        
+        // Invoke the event
+        if (onBroomTaskCompleted != null)
+            onBroomTaskCompleted.Invoke();
     }
     
     // Reset the counter (useful for scene changes or restarting)
