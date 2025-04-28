@@ -3,13 +3,15 @@ using UnityEngine;
 public class CashPickUpPlace : MonoBehaviour
 {
     [Header("Item Settings")]
-    [SerializeField] private GameObject cashOnTable; // The cash on the table
-    [SerializeField] private GameObject cashOnPlayer; // The cash to show on player
-    [SerializeField] private GameObject pickupPromptText; // UI text prompt for pickup
+    public GameObject cashOnTable; // The cash on the table
+    public GameObject cashOnPlayer; // The cash to show on player
+    public GameObject pickupPromptText; // UI text prompt for pickup
 
     [Header("Interaction Settings")]
-    [SerializeField] private float interactionDistance = 5f; // How far the player can interact from
-    [SerializeField] private LayerMask interactionLayer; // Layer for the raycast
+    public float interactionDistance = 5f; // How far the player can interact from
+    public LayerMask interactionLayer; // Layer for the raycast
+
+    private CigsPlacementArea cigsPlacementArea;
 
     private bool isHoldingCash = false;
     private Camera playerCamera;
@@ -34,6 +36,8 @@ public class CashPickUpPlace : MonoBehaviour
             pickupPromptText.SetActive(false);
         }
 
+        cigsPlacementArea = FindObjectOfType<CigsPlacementArea>();
+
         // Get the main camera (usually the player's camera)
         playerCamera = Camera.main;
     }
@@ -41,6 +45,15 @@ public class CashPickUpPlace : MonoBehaviour
     void Update()
     {
 
+        if (cigsPlacementArea == null || !cigsPlacementArea.cigsPlaced)
+        {
+            // Don't allow interaction yet
+            if (pickupPromptText != null)
+            {
+                pickupPromptText.SetActive(false);
+            }
+            return;
+        }
 
         // Don't check for interaction if already holding cash
         if (isHoldingCash)

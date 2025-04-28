@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class CashPlacementArea : MonoBehaviour
 {
-    [SerializeField] private GameObject placementPromptText; // UI text prompt for placement
-    [SerializeField] private GameObject cashOnPlayer; // Reference to the cash object on player that needs to be hidden
-    [SerializeField] private float interactionDistance = 5f; // How far the player can interact from
-    [SerializeField] private float sphereCastRadius = 0.5f; // Radius of the sphere cast for more forgiving detection
-
+    public GameObject placementPromptText; // UI text prompt for placement
+    public GameObject cashOnPlayer; // Reference to the cash object on player that needs to be hidden
+    public float interactionDistance = 5f; // How far the player can interact from
+    public float sphereCastRadius = 0.5f; // Radius of the sphere cast for more forgiving detection
+    public AudioSource PlacementSound;
     private Camera playerCamera;
     private CashPickUpPlace cashPickUpScript;
 
@@ -82,6 +82,12 @@ public class CashPlacementArea : MonoBehaviour
 
         // Tell the pickup script that cash has been placed
         cashPickUpScript.CashPlaced();
+
+        // Play placement sound if we have one
+        if (PlacementSound != null)
+        {
+            PlacementSound.Play();
+        }
 
         // Hide the prompt
         if (placementPromptText != null)

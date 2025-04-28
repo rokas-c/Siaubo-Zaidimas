@@ -5,23 +5,32 @@ public class Cleaning : MonoBehaviour
 {
     private GameObject broom;
     public float fadeOutTime = 1.5f; // How long the fadeout takes in seconds
-    
+    public float startOpacity = 0.7f; // Starting opacity (70%)
+
     private SpriteRenderer spriteRenderer;
     private Collider2D trashCollider;
     private bool isFading = false;
-    
+
     void Start()
     {
         // Find the broom object in the scene
         broom = GameObject.FindWithTag("Broom");
-        
+
         // Get the SpriteRenderer component
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer == null)
         {
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         }
-        
+
+        // Set initial opacity to startOpacity
+        if (spriteRenderer != null)
+        {
+            Color color = spriteRenderer.color;
+            color.a = startOpacity;
+            spriteRenderer.color = color;
+        }
+
         // Get the collider for disabling during fade out
         trashCollider = GetComponent<Collider2D>();
     }
@@ -34,7 +43,7 @@ public class Cleaning : MonoBehaviour
             StartCoroutine(FadeOutAndDestroy());
         }
     }
-    
+
     bool IsBroomPickedUp()
     {
         // First check if we have found the broom
@@ -43,7 +52,7 @@ public class Cleaning : MonoBehaviour
             broom = GameObject.FindWithTag("Broom");
             if (broom == null) return false;
         }
-        
+
         // Check if the broom is active in the hierarchy (picked up)
         if (broom.activeInHierarchy)
         {
@@ -55,26 +64,26 @@ public class Cleaning : MonoBehaviour
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     IEnumerator FadeOutAndDestroy()
     {
         isFading = true;
-        
+
         // Disable the collider so it can't be clicked again
         if (trashCollider != null)
         {
             trashCollider.enabled = false;
         }
-        
+
         // Make sure we have something to fade
         if (spriteRenderer != null)
         {
             Color originalColor = spriteRenderer.color;
             float elapsedTime = 0f;
-            
+
             // Gradually reduce alpha over time
             while (elapsedTime < fadeOutTime)
             {
@@ -83,17 +92,17 @@ public class Cleaning : MonoBehaviour
                 spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, newAlpha);
                 yield return null;
             }
-            
+
             // Make sure alpha is zero
             spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0f);
         }
-        
+
         // Notify the GameManager that a puddle was cleaned if this has the Puddle tag
         if (gameObject.CompareTag("Puddle") && GameManager.Instance != null)
         {
             GameManager.Instance.PuddleCleaned();
         }
-        
+
         // Finally destroy the object after fading
         Destroy(gameObject);
     }

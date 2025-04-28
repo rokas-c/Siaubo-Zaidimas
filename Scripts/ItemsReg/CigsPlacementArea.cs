@@ -2,14 +2,16 @@ using UnityEngine;
 
 public class CigsPlacementArea : MonoBehaviour
 {
-    [SerializeField] private GameObject placementPromptText; // UI text prompt for placement
-    [SerializeField] private GameObject cigsOnPlayer; // Reference to the cigs object on player that needs to be hidden
-    [SerializeField] private float interactionDistance = 5f; // How far the player can interact from
-    [SerializeField] private Collider placementCollider; // Specific collider to look at for placement
+    public GameObject placementPromptText; // UI text prompt for placement
+    public GameObject cigsOnPlayer; // Reference to the cigs object on player that needs to be hidden
+    public float interactionDistance = 5f; // How far the player can interact from
+    public Collider placementCollider; // Specific collider to look at for placement
 
     private Camera playerCamera;
     private CigsPickUp cigsPickUpScript;
     private bool isLookingAtPlacementArea = false;
+
+    public bool cigsPlaced = false;
 
     void Start()
     {
@@ -145,5 +147,8 @@ public class CigsPlacementArea : MonoBehaviour
         {
             placementPromptText.SetActive(false);
         }
+
+        cigsPlaced = true;
     }
+
 }

@@ -8,37 +8,27 @@ public class JumpscareController : MonoBehaviour
     public GameObject scaryModel; // The object to focus on
     public float jumpscareLength = 3f; // How long the jumpscare lasts
     public AudioClip jumpscareSound; // Optional sound effect
+    public AudioSource VoiceActing;
     public float cameraZoomFOV = 40f; // FOV during jumpscare (lower = more zoomed in)
     public float fadeSpeed = 1.5f; // Speed of the screen fade
 
     [Header("Slide Settings")]
-    [Tooltip("Should the model slide into view?")]
     public bool useSlideEffect = true;
-    [Tooltip("Where the model starts sliding from")]
-    [SerializeField] private Transform slideStartPosition;
-    [Tooltip("Where the model slides to")]
-    [SerializeField] private Transform slideEndPosition;
-    [Tooltip("How quickly the model slides into view")]
+    public Transform slideStartPosition;
+    public Transform slideEndPosition;
     public float slideSpeed = 4f;
-    [Tooltip("Keep the model's original rotation during slide")]
     public bool maintainRotation = true;
 
     [Header("Darkness Effect")]
-    [Tooltip("Make the model appear dark during slide")]
     public bool useDarknessEffect = true;
-    [Tooltip("How dark the model should be (0 = completely black, 1 = normal)")]
     [Range(0f, 1f)] public float darknessFactor = 0.2f;
-    [Tooltip("How quickly to transition to normal brightness")]
     public float brightnessTransitionSpeed = 3f;
 
-    [Tooltip("Location to teleport the player after jumpscare")]
-    [SerializeField] private Transform teleportLocation; // Where to teleport the player
+    public Transform teleportLocation; // Where to teleport the player
 
-    [Tooltip("Location to teleport the jumpscare model to")]
-    [SerializeField] private Transform scaryModelTeleportLocation; // Where to teleport the jumpscare model
+    public Transform scaryModelTeleportLocation; // Where to teleport the jumpscare model
 
-    [Tooltip("Collider to enable during jumpscare")]
-    [SerializeField] private Collider colliderToEnable; // Collider to enable during jumpscare
+    public Collider colliderToEnable; // Collider to enable during jumpscare
 
     private AudioSource audioSource;
     private PlayerMovement playerMovement;
@@ -93,6 +83,11 @@ public class JumpscareController : MonoBehaviour
             {
                 CacheModelMaterials();
             }
+        }
+
+        if (VoiceActing != null)
+        {
+            VoiceActing.Play();
         }
     }
 

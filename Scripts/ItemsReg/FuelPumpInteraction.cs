@@ -8,11 +8,11 @@ public class FuelPumpInteraction : MonoBehaviour
     public GameObject interactionPrompt;
 
     [Header("Audio")]
-    [SerializeField] private AudioSource pumpAudioSource;
+    public AudioSource pumpAudioSource;
 
     [Header("Activation Settings")]
-    [SerializeField] private GameObject triggerObject; // The object to check for visibility
-    [SerializeField] private float checkInterval = 0.5f; // How often to check if object is visible
+    public GameObject triggerObject; // The object to check for visibility
+    public float checkInterval = 0.5f; // How often to check if object is visible
 
     private bool isPlayerNearby = false;
     private bool hasBeenUsed = false; // Track if the pump has been used already
@@ -108,6 +108,12 @@ public class FuelPumpInteraction : MonoBehaviour
         // Mark the pump as used
         hasBeenUsed = true;
 
+        if (pumpAudioSource != null && !pumpAudioSource.isPlaying)
+        {
+            // Play the pump sound
+            pumpAudioSource.Play();
+        }
+
         // Hide prompt permanently
         if (interactionPrompt != null)
             interactionPrompt.SetActive(false);
@@ -133,13 +139,6 @@ public class FuelPumpInteraction : MonoBehaviour
                 interactionPrompt.SetActive(false);
         }
     }
-    // Visualization in editor
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, interactionDistance);
-    }
-
     // Public method to check if the pump has been used (can be accessed by other scripts)
     public bool HasBeenUsed()
     {
