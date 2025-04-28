@@ -6,14 +6,14 @@ public class CashPickUpPlace : MonoBehaviour
     [SerializeField] private GameObject cashOnTable; // The cash on the table
     [SerializeField] private GameObject cashOnPlayer; // The cash to show on player
     [SerializeField] private GameObject pickupPromptText; // UI text prompt for pickup
-    
+
     [Header("Interaction Settings")]
     [SerializeField] private float interactionDistance = 5f; // How far the player can interact from
     [SerializeField] private LayerMask interactionLayer; // Layer for the raycast
-    
+
     private bool isHoldingCash = false;
     private Camera playerCamera;
-    
+
     void Start()
     {
         // Make sure the cash on player is hidden initially
@@ -21,7 +21,7 @@ public class CashPickUpPlace : MonoBehaviour
         {
             cashOnPlayer.SetActive(false);
         }
-        
+
         // Show cash on table initially
         if (cashOnTable != null)
         {
@@ -33,7 +33,7 @@ public class CashPickUpPlace : MonoBehaviour
         {
             pickupPromptText.SetActive(false);
         }
-        
+
         // Get the main camera (usually the player's camera)
         playerCamera = Camera.main;
     }
@@ -41,7 +41,7 @@ public class CashPickUpPlace : MonoBehaviour
     void Update()
     {
 
-        
+
         // Don't check for interaction if already holding cash
         if (isHoldingCash)
         {
@@ -51,7 +51,7 @@ public class CashPickUpPlace : MonoBehaviour
             }
             return;
         }
-        
+
         // If cash is not on table, don't show prompt or check for interaction
         if (cashOnTable == null || !cashOnTable.activeSelf)
         {
@@ -61,11 +61,11 @@ public class CashPickUpPlace : MonoBehaviour
             }
             return;
         }
-        
+
         // Raycast from camera center
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
-        
+
         // Check if the ray hits this object within the interaction distance
         if (Physics.Raycast(ray, out hit, interactionDistance, interactionLayer))
         {
@@ -76,7 +76,7 @@ public class CashPickUpPlace : MonoBehaviour
                 {
                     pickupPromptText.SetActive(true);
                 }
-                
+
                 // Check for E key press to pick up
                 if (Input.GetKeyDown(KeyCode.E))
                 {
@@ -104,7 +104,7 @@ public class CashPickUpPlace : MonoBehaviour
 
     private void PickUpCash()
     {
-        
+
         // Hide cash on table
         if (cashOnTable != null)
         {
@@ -125,15 +125,15 @@ public class CashPickUpPlace : MonoBehaviour
         {
             pickupPromptText.SetActive(false);
         }
-        
+
     }
-    
+
     // Public method for the placement script to check
     public bool IsHoldingCash()
     {
         return isHoldingCash;
     }
-    
+
     // Public method for the placement script to call when cash is placed
     public void CashPlaced()
     {

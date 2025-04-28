@@ -14,10 +14,10 @@ public class BroomJumpscareTrigger : MonoBehaviour
     [SerializeField] private GameObject jumpscareModelPrefab; // Jumpscare character to spawn
     [SerializeField] private Transform jumpscareSpawnPosition; // Where to spawn the jumpscare model
     [SerializeField] private GameObject jumpscareColliderObject; // Collider to enable for jumpscare trigger
-    
+
     private AudioSource audioSource;
     private bool jumpscareTriggered = false;
-    
+
     void Start()
     {
         // Add audio source component if not already present
@@ -26,19 +26,19 @@ public class BroomJumpscareTrigger : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        
+
         // Make sure jumpscare elements are hidden initially
         if (jumpscareModelPrefab != null)
         {
             jumpscareModelPrefab.SetActive(false);
         }
-        
+
         if (jumpscareColliderObject != null)
         {
             jumpscareColliderObject.SetActive(false);
         }
     }
-    
+
     // This public method will be called by BroomPlacementZone when the broom is placed
     public void OnBroomPlaced()
     {
@@ -48,19 +48,19 @@ public class BroomJumpscareTrigger : MonoBehaviour
             StartCoroutine(TriggerJumpscareSequence());
         }
     }
-    
+
     private IEnumerator TriggerJumpscareSequence()
     {
         // Random delay before jumpscare
         float randomDelay = Random.Range(minDelayAfterBroomPlacement, maxDelayAfterBroomPlacement);
         yield return new WaitForSeconds(randomDelay);
-        
+
         // Play jumpscare sound
         PlayJumpscareSound();
-        
+
         // Additional delay after sound before jumpscare
         yield return new WaitForSeconds(1.5f);
-        
+
         // Activate jumpscare model at spawn position
         if (jumpscareModelPrefab != null && jumpscareSpawnPosition != null)
         {
@@ -68,14 +68,14 @@ public class BroomJumpscareTrigger : MonoBehaviour
             jumpscareModelPrefab.transform.position = jumpscareSpawnPosition.position;
             jumpscareModelPrefab.transform.rotation = jumpscareSpawnPosition.rotation;
         }
-        
+
         // Activate jumpscare collider
         if (jumpscareColliderObject != null)
         {
             jumpscareColliderObject.SetActive(true);
         }
     }
-    
+
     private void PlayJumpscareSound()
     {
         if (jumpscareSound != null && audioSource != null)
@@ -86,7 +86,7 @@ public class BroomJumpscareTrigger : MonoBehaviour
             audioSource.Play();
         }
     }
-    
+
     // For debugging purposes
     public void ForceJumpscare()
     {
