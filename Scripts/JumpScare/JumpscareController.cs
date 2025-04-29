@@ -8,7 +8,6 @@ public class JumpscareController : MonoBehaviour
     public GameObject scaryModel; // The object to focus on
     public float jumpscareLength = 3f; // How long the jumpscare lasts
     public AudioClip jumpscareSound; // Optional sound effect
-    public AudioSource VoiceActing;
     public float cameraZoomFOV = 40f; // FOV during jumpscare (lower = more zoomed in)
     public float fadeSpeed = 1.5f; // Speed of the screen fade
 
@@ -83,11 +82,6 @@ public class JumpscareController : MonoBehaviour
             {
                 CacheModelMaterials();
             }
-        }
-
-        if (VoiceActing != null)
-        {
-            VoiceActing.Play();
         }
     }
 

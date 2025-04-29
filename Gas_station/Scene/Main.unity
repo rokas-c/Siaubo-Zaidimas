@@ -684,7 +684,7 @@ Transform:
   m_GameObject: {fileID: 113949006}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.06, y: 1.068, z: -26.626}
+  m_LocalPosition: {x: -6.06, y: 1.068, z: -26.8}
   m_LocalScale: {x: 0.8, y: 1, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3787,7 +3787,7 @@ Transform:
   m_GameObject: {fileID: 637091736}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.227, y: -0.235, z: 2.073}
+  m_LocalPosition: {x: -0.227, y: -0.235, z: 1.323}
   m_LocalScale: {x: 2.4150267, y: 2.8124683, z: 1.0885509}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3829,7 +3829,6 @@ MonoBehaviour:
   scaryModel: {fileID: 1139166198}
   jumpscareLength: 10
   jumpscareSound: {fileID: 8300000, guid: 3f9953b8014060b4da132ef773e13618, type: 3}
-  VoiceActing: {fileID: 0}
   cameraZoomFOV: 40
   fadeSpeed: 1.5
   useSlideEffect: 1
@@ -3853,9 +3852,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_audioClip: {fileID: 8300000, guid: 3f9953b8014060b4da132ef773e13618, type: 3}
+  m_Resource: {fileID: 8300000, guid: 3f9953b8014060b4da132ef773e13618, type: 3}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -5644,7 +5643,7 @@ GameObject:
   - component: {fileID: 999846702}
   m_Layer: 0
   m_Name: dirt
-  m_TagString: Puddle
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6661,7 +6660,7 @@ Transform:
   m_GameObject: {fileID: 1139166198}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.071, y: 2.009, z: -22.974}
+  m_LocalPosition: {x: -5.384, y: 2.009, z: -24.962}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6687,7 +6686,7 @@ GameObject:
   - component: {fileID: 1182876618}
   m_Layer: 0
   m_Name: dirt (3)
-  m_TagString: Puddle
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7214,7 +7213,7 @@ GameObject:
   - component: {fileID: 1393905621}
   m_Layer: 0
   m_Name: dirt (2)
-  m_TagString: Puddle
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8459,7 +8458,7 @@ GameObject:
   - component: {fileID: 1584671881}
   m_Layer: 0
   m_Name: dirt (6)
-  m_TagString: Puddle
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10002,7 +10001,7 @@ Transform:
   m_GameObject: {fileID: 1742607461}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.365, y: 2.009, z: -22.181}
+  m_LocalPosition: {x: -8.365, y: 2.009, z: -22.714}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10464,7 +10463,7 @@ GameObject:
   - component: {fileID: 1800005231}
   m_Layer: 0
   m_Name: dirt (4)
-  m_TagString: Puddle
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11369,7 +11368,7 @@ GameObject:
   - component: {fileID: 2009829738}
   m_Layer: 0
   m_Name: dirt (1)
-  m_TagString: Puddle
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11614,7 +11613,7 @@ GameObject:
   - component: {fileID: 2075475176}
   m_Layer: 0
   m_Name: dirt (5)
-  m_TagString: Puddle
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61413,6 +61412,7 @@ MonoBehaviour:
   hingeJoint: {fileID: 5357341050111809301}
   openAngleThreshold: 30
   soundCooldown: 2
+  teleportedObject: {fileID: 1139166199}
 --- !u!4 &5358218891524932198
 Transform:
   m_ObjectHideFlags: 0
@@ -71125,6 +71125,7 @@ MonoBehaviour:
   hingeJoint: {fileID: 6413497658803454096}
   openAngleThreshold: 10
   soundCooldown: 2
+  teleportedObject: {fileID: 0}
 --- !u!114 &6413497658803454100
 MonoBehaviour:
   m_ObjectHideFlags: 0
