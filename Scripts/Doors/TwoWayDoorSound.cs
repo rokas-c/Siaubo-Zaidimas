@@ -34,7 +34,7 @@ public class TwoWayDoorSound : MonoBehaviour
         {
             lastTeleportPos = teleportedObject.position;
             isMuted = true;
-            muteEndTime = Time.time + 10f; // Mute for 10 seconds
+            muteEndTime = Time.time + 15f;
         }
 
         // Unmute after 10 seconds

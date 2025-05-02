@@ -11,7 +11,13 @@ public class CashPickUpPlace : MonoBehaviour
     public float interactionDistance = 5f; // How far the player can interact from
     public LayerMask interactionLayer; // Layer for the raycast
 
+    [Header("Movement Detection")]
+    public Transform objectToTrack; // The object to track for movement
+    public float movementThreshold = 0.01f; // How much movement is required to show cash
+
     private CigsPlacementArea cigsPlacementArea;
+    private Vector3 lastObjectPosition;
+    private bool objectHasMoved = false;
 
     private bool isHoldingCash = false;
     private Camera playerCamera;
@@ -24,10 +30,10 @@ public class CashPickUpPlace : MonoBehaviour
             cashOnPlayer.SetActive(false);
         }
 
-        // Show cash on table initially
+        // Hide cash on table initially - it will only appear when the tracked object moves
         if (cashOnTable != null)
         {
-            cashOnTable.SetActive(true);
+            cashOnTable.SetActive(false);
         }
 
         // Hide the pickup prompt initially
@@ -40,10 +46,18 @@ public class CashPickUpPlace : MonoBehaviour
 
         // Get the main camera (usually the player's camera)
         playerCamera = Camera.main;
+
+        // Initialize the last position of the tracked object
+        if (objectToTrack != null)
+        {
+            lastObjectPosition = objectToTrack.position;
+        }
     }
 
     void Update()
     {
+        // Check if the tracked object has moved
+        CheckObjectMovement();
 
         if (cigsPlacementArea == null || !cigsPlacementArea.cigsPlaced)
         {
@@ -115,9 +129,31 @@ public class CashPickUpPlace : MonoBehaviour
         }
     }
 
+    private void CheckObjectMovement()
+    {
+        // Skip if no object is assigned to track
+        if (objectToTrack == null)
+            return;
+
+        // Check if the object has moved beyond the threshold
+        float movementDistance = Vector3.Distance(objectToTrack.position, lastObjectPosition);
+
+        if (movementDistance > movementThreshold && !objectHasMoved)
+        {
+            // Object has moved, make the cash visible
+            objectHasMoved = true;
+            if (cashOnTable != null)
+            {
+                cashOnTable.SetActive(true);
+            }
+        }
+
+        // Update the last position for the next frame
+        lastObjectPosition = objectToTrack.position;
+    }
+
     private void PickUpCash()
     {
-
         // Hide cash on table
         if (cashOnTable != null)
         {
@@ -138,7 +174,6 @@ public class CashPickUpPlace : MonoBehaviour
         {
             pickupPromptText.SetActive(false);
         }
-
     }
 
     // Public method for the placement script to check
