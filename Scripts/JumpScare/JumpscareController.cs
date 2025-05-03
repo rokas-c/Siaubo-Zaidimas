@@ -8,15 +8,13 @@ public class JumpscareController : MonoBehaviour
     public GameObject scaryModel; // The object to focus on
     public float jumpscareLength = 3f; // How long the jumpscare lasts
     public AudioClip jumpscareSound; // Optional sound effect
+    public AudioClip VoiceActingJump;
+    public AudioClip VoiceActingReg;
     public float cameraZoomFOV = 40f; // FOV during jumpscare (lower = more zoomed in)
     public float fadeSpeed = 1.5f; // Speed of the screen fade
 
-    [Header("Slide Settings")]
-    public bool useSlideEffect = true;
-    public Transform slideStartPosition;
-    public Transform slideEndPosition;
-    public float slideSpeed = 4f;
-    public bool maintainRotation = true;
+    [Header("Jumpscare Position")]
+    public Transform jumpscarePosition; // Where to teleport the model for jumpscare (replaces slideEndPosition)
 
     [Header("Darkness Effect")]
     public bool useDarknessEffect = true;
@@ -298,6 +296,7 @@ public class JumpscareController : MonoBehaviour
         if (audioSource != null && jumpscareSound != null)
         {
             audioSource.Play();
+            StartCoroutine(PlayVoiceActingAfterJumpscareSound());
         }
 
         // Make model dark if using darkness effect
@@ -306,37 +305,16 @@ public class JumpscareController : MonoBehaviour
             SetModelDarkness(true);
         }
 
-        // Position the scary model if using slide effect
-        if (useSlideEffect && scaryModel != null && slideStartPosition != null && slideEndPosition != null)
+        // Teleport the scary model to the jumpscare position
+        if (scaryModel != null && jumpscarePosition != null)
         {
-            // Store original position and rotation
+            // Store original position and rotation for later
             Vector3 originalPos = scaryModel.transform.position;
             Quaternion originalRot = scaryModel.transform.rotation;
 
-            // Position the model at start position
-            scaryModel.transform.position = slideStartPosition.position;
-
-            // Keep original rotation if maintainRotation is true, otherwise use the slide start rotation
-            if (!maintainRotation)
-            {
-                scaryModel.transform.rotation = slideStartPosition.rotation;
-            }
-            else
-            {
-                scaryModel.transform.rotation = originalRot;
-            }
-
-            // Slide the model into view along the predefined path
-            float slideTime = 0f;
-            while (slideTime < 1.0f)
-            {
-                slideTime += Time.deltaTime * slideSpeed;
-                scaryModel.transform.position = Vector3.Lerp(slideStartPosition.position, slideEndPosition.position, Mathf.SmoothStep(0, 1, slideTime));
-                yield return null;
-            }
-
-            // Ensure the model reaches the exact end position
-            scaryModel.transform.position = slideEndPosition.position;
+            // Directly teleport the model to jumpscare position
+            scaryModel.transform.position = jumpscarePosition.position;
+            scaryModel.transform.rotation = jumpscarePosition.rotation;
 
             // Start fading back to normal brightness
             if (useDarknessEffect)
@@ -346,7 +324,7 @@ public class JumpscareController : MonoBehaviour
         }
         else if (useDarknessEffect)
         {
-            // If not using slide but still using darkness, fade back to normal brightness
+            // If not teleporting but still using darkness, fade back to normal brightness
             StartCoroutine(FadeModelToBrightness(1f / brightnessTransitionSpeed));
         }
 
@@ -468,6 +446,29 @@ public class JumpscareController : MonoBehaviour
 
         // Disable the trigger so it doesn't happen again
         gameObject.GetComponent<Collider>().enabled = false;
+
+        AudioClip audioClip = VoiceActingReg;
+        if (audioClip != null && audioSource != null)
+        {
+            audioSource.clip = audioClip;
+            audioSource.Play();
+        }
+    }
+
+    private IEnumerator PlayVoiceActingAfterJumpscareSound()
+    {
+        // Wait for the jumpscare sound to finish
+        if (jumpscareSound != null)
+        {
+            yield return new WaitForSeconds(3.5f);
+        }
+
+        // Play the jumpscare voice acting
+        if (audioSource != null && VoiceActingJump != null)
+        {
+            audioSource.clip = VoiceActingJump;
+            audioSource.Play();
+        }
     }
 
     // Clean up materials when destroyed

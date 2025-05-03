@@ -10,111 +10,77 @@ public class FuelPumpInteraction : MonoBehaviour
     [Header("Audio")]
     public AudioSource pumpAudioSource;
 
-    [Header("Activation Settings")]
-    public GameObject triggerObject; // The object to check for visibility
-    public float checkInterval = 0.5f; // How often to check if object is visible
-
     private bool isPlayerNearby = false;
-    private bool hasBeenUsed = false; // Track if the pump has been used already
-    private float checkTimer = 0f;
+    private bool hasBeenUsed = false;
     private bool isInteractionEnabled = false;
+    private Camera mainCamera;
+
+    // Reference to cigarette placement script
+    private CigsPlacementArea cigsPlacementScript;
 
     void Start()
     {
-        // Hide prompt at start
+        // Hide prompt initially
         if (interactionPrompt != null)
             interactionPrompt.SetActive(false);
 
-        // Ensure we have an audio source
+        // Get main camera reference once
+        mainCamera = Camera.main;
+
+        // Setup audio source if needed
         if (pumpAudioSource == null)
-        {
-            pumpAudioSource = GetComponent<AudioSource>();
-            if (pumpAudioSource == null)
-            {
-                pumpAudioSource = gameObject.AddComponent<AudioSource>();
-            }
-        }
+            pumpAudioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
+
+        // Find cigarette placement script
+        cigsPlacementScript = FindObjectOfType<CigsPlacementArea>();
     }
 
     void Update()
     {
-        // Check if the trigger object is visible at the set interval
-        if (!isInteractionEnabled && triggerObject != null)
-        {
-            checkTimer += Time.deltaTime;
-            if (checkTimer >= checkInterval)
-            {
-                checkTimer = 0f;
-                if (triggerObject.activeInHierarchy)
-                {
-                    isInteractionEnabled = true;
-                }
-            }
-        }
+        // Check if cigs have been placed - this enables the pump
+        if (cigsPlacementScript != null && cigsPlacementScript.cigsPlaced)
+            isInteractionEnabled = true;
 
         // Don't process interactions if not enabled
-        if (!isInteractionEnabled)
-        {
+        if (!isInteractionEnabled || hasBeenUsed)
             return;
-        }
 
-        // Only check for interaction if pump hasn't been used yet
-        if (!hasBeenUsed)
-        {
-            // Check if player can interact (either through raycast or proximity)
-            bool canInteract = CheckRaycastInteraction() || isPlayerNearby;
+        // Check if player can interact
+        bool canInteract = CheckRaycastInteraction() || isPlayerNearby;
 
-            // Show/hide interaction prompt
-            if (interactionPrompt != null)
-            {
-                interactionPrompt.SetActive(canInteract);
-            }
+        // Show/hide interaction prompt
+        if (interactionPrompt != null)
+            interactionPrompt.SetActive(canInteract);
 
-            // Handle interaction input
-            if (canInteract && Input.GetKeyDown(KeyCode.E))
-            {
-                InteractWithPump();
-            }
-        }
+        // Handle interaction input
+        if (canInteract && Input.GetKeyDown(KeyCode.Mouse0))
+            InteractWithPump();
     }
 
     private bool CheckRaycastInteraction()
     {
-        // Get main camera and perform raycast
-        Camera mainCamera = Camera.main;
         if (mainCamera == null)
             return false;
 
         Ray ray = mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-        RaycastHit hit;
 
-        // Visualize the ray in scene view for debugging
+        // Debug visualization
         Debug.DrawRay(ray.origin, ray.direction * interactionDistance, Color.red);
 
         // Check if raycast hits this object
-        if (Physics.Raycast(ray, out hit, interactionDistance, interactionLayer))
-        {
-            if (hit.collider.gameObject == gameObject)
-            {
-                return true;
-            }
-        }
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance, interactionLayer))
+            return hit.collider.gameObject == gameObject;
 
         return false;
     }
 
     private void InteractWithPump()
     {
-        // Mark the pump as used
         hasBeenUsed = true;
 
         if (pumpAudioSource != null && !pumpAudioSource.isPlaying)
-        {
-            // Play the pump sound
             pumpAudioSource.Play();
-        }
 
-        // Hide prompt permanently
         if (interactionPrompt != null)
             interactionPrompt.SetActive(false);
     }
@@ -123,9 +89,7 @@ public class FuelPumpInteraction : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && !hasBeenUsed && isInteractionEnabled)
-        {
             isPlayerNearby = true;
-        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -134,12 +98,11 @@ public class FuelPumpInteraction : MonoBehaviour
         {
             isPlayerNearby = false;
 
-            // Make sure to hide the prompt when player leaves the area
             if (interactionPrompt != null && !hasBeenUsed)
                 interactionPrompt.SetActive(false);
         }
     }
-    // Public method to check if the pump has been used (can be accessed by other scripts)
+
     public bool HasBeenUsed()
     {
         return hasBeenUsed;

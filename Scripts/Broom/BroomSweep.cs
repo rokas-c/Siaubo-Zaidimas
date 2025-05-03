@@ -9,13 +9,13 @@ public class BroomSweep : MonoBehaviour
     public bool canSweep = true; // Changed to public
     private float cooldownTimer = 0f;
     private bool isCurrentlySweeping = false; // New variable to track sweep action
-    
+
     // Add this public method to check sweep status
     public bool IsActivelySweepping()
     {
         return isCurrentlySweeping;
     }
-    
+
     void Start()
     {
         // Add an AudioSource component if one doesn't exist
@@ -25,7 +25,7 @@ public class BroomSweep : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
         }
     }
-    
+
     void Update()
     {
         // Handle cooldown timer
@@ -37,28 +37,26 @@ public class BroomSweep : MonoBehaviour
                 canSweep = true;
             }
         }
-        
+
         // Update whether we're actively sweeping
         isCurrentlySweeping = Input.GetMouseButton(0) && !canSweep;
-        
+
         // Check for left mouse button click
         if (Input.GetMouseButtonDown(0) && canSweep)
         {
-            // Print "sweep" to console
-            Debug.Log("sweep");
-            
+
             // Play sweep sound if available
             if (sweepSound != null)
             {
                 audioSource.PlayOneShot(sweepSound);
             }
-            
+
             // Start cooldown
             canSweep = false;
             cooldownTimer = cooldownTime;
         }
     }
-    
+
     void OnCollisionEnter2D(Collision2D collision) // Changed from OnTriggerEnter2D
     {
         Debug.Log("Broom collided with: " + collision.gameObject.name);

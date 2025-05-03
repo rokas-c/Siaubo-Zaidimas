@@ -35,7 +35,7 @@ public class PunchInAction : MonoBehaviour
         }
 
         // Check for interaction input
-        if (canInteract && !HasPunchedIn && Input.GetKeyDown(KeyCode.E))
+        if (canInteract && !HasPunchedIn && Input.GetKeyDown(KeyCode.Mouse0))
         {
             // Set static flag
             HasPunchedIn = true;

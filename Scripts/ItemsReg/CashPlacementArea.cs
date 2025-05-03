@@ -7,8 +7,10 @@ public class CashPlacementArea : MonoBehaviour
     public float interactionDistance = 5f; // How far the player can interact from
     public float sphereCastRadius = 0.5f; // Radius of the sphere cast for more forgiving detection
     public AudioSource PlacementSound;
+
     private Camera playerCamera;
     private CashPickUpPlace cashPickUpScript;
+    private bool cashPlacedPermanently = false; // Flag to track if cash has been placed permanently
 
     void Start()
     {
@@ -24,10 +26,16 @@ public class CashPlacementArea : MonoBehaviour
 
     void Update()
     {
+        // If cash was already placed permanently, don't process anything
+        if (cashPlacedPermanently)
+        {
+            return;
+        }
+
         // Only check for placement if player is holding cash
         if (cashPickUpScript == null || !cashPickUpScript.IsHoldingCash())
         {
-            if (placementPromptText != null)
+            if (placementPromptText != null && placementPromptText.activeSelf)
             {
                 placementPromptText.SetActive(false);
             }
@@ -43,7 +51,7 @@ public class CashPlacementArea : MonoBehaviour
         }
 
         // Check for E key press to place cash
-        if (isLookingAtPlacementArea && Input.GetKeyDown(KeyCode.E))
+        if (isLookingAtPlacementArea && Input.GetKeyDown(KeyCode.Mouse0))
         {
             PlaceCash();
         }
@@ -80,9 +88,6 @@ public class CashPlacementArea : MonoBehaviour
             cashOnPlayer.SetActive(false);
         }
 
-        // Tell the pickup script that cash has been placed
-        cashPickUpScript.CashPlaced();
-
         // Play placement sound if we have one
         if (PlacementSound != null)
         {
@@ -94,6 +99,22 @@ public class CashPlacementArea : MonoBehaviour
         {
             placementPromptText.SetActive(false);
         }
+
+        // Mark as permanently placed
+        cashPlacedPermanently = true;
+
+        // Optional: Disable collider to prevent further interaction
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+        {
+            col.enabled = false;
+        }
+    }
+
+    // Public method for other scripts that might need to know if cash was placed permanently
+    public bool IsCashPlacedPermanently()
+    {
+        return cashPlacedPermanently;
     }
 
     // Optional: Add visual debugging to see what's happening

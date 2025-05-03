@@ -11,16 +11,11 @@ public class CashPickUpPlace : MonoBehaviour
     public float interactionDistance = 5f; // How far the player can interact from
     public LayerMask interactionLayer; // Layer for the raycast
 
-    [Header("Movement Detection")]
-    public Transform objectToTrack; // The object to track for movement
-    public float movementThreshold = 0.01f; // How much movement is required to show cash
-
     private CigsPlacementArea cigsPlacementArea;
-    private Vector3 lastObjectPosition;
-    private bool objectHasMoved = false;
-
     private bool isHoldingCash = false;
     private Camera playerCamera;
+    private bool cashSpawned = false;
+    private bool cashPickedUpPermanently = false;
 
     void Start()
     {
@@ -30,7 +25,7 @@ public class CashPickUpPlace : MonoBehaviour
             cashOnPlayer.SetActive(false);
         }
 
-        // Hide cash on table initially - it will only appear when the tracked object moves
+        // Hide cash on table initially - it will appear when cigs are placed
         if (cashOnTable != null)
         {
             cashOnTable.SetActive(false);
@@ -42,47 +37,31 @@ public class CashPickUpPlace : MonoBehaviour
             pickupPromptText.SetActive(false);
         }
 
+        // Find the cigarette placement area script
         cigsPlacementArea = FindObjectOfType<CigsPlacementArea>();
 
         // Get the main camera (usually the player's camera)
         playerCamera = Camera.main;
-
-        // Initialize the last position of the tracked object
-        if (objectToTrack != null)
-        {
-            lastObjectPosition = objectToTrack.position;
-        }
     }
 
     void Update()
     {
-        // Check if the tracked object has moved
-        CheckObjectMovement();
-
-        if (cigsPlacementArea == null || !cigsPlacementArea.cigsPlaced)
+        // If cash was already picked up permanently, don't process anything
+        if (cashPickedUpPermanently)
         {
-            // Don't allow interaction yet
-            if (pickupPromptText != null)
-            {
-                pickupPromptText.SetActive(false);
-            }
             return;
         }
 
-        // Don't check for interaction if already holding cash
-        if (isHoldingCash)
+        // Check if cigarettes have been placed and cash hasn't spawned yet
+        if (cigsPlacementArea != null && cigsPlacementArea.cigsPlaced && !cashSpawned && !isHoldingCash)
         {
-            if (pickupPromptText != null)
-            {
-                pickupPromptText.SetActive(false);
-            }
-            return;
+            SpawnCash();
         }
 
-        // If cash is not on table, don't show prompt or check for interaction
-        if (cashOnTable == null || !cashOnTable.activeSelf)
+        // Don't check for interaction if already holding cash or cash isn't spawned
+        if (isHoldingCash || !cashSpawned)
         {
-            if (pickupPromptText != null)
+            if (pickupPromptText != null && pickupPromptText.activeSelf)
             {
                 pickupPromptText.SetActive(false);
             }
@@ -105,15 +84,17 @@ public class CashPickUpPlace : MonoBehaviour
                 }
 
                 // Check for E key press to pick up
-                if (Input.GetKeyDown(KeyCode.E))
+                if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
                     PickUpCash();
+                    // Mark as permanently picked up
+                    cashPickedUpPermanently = true;
                 }
             }
             else
             {
                 // Player is looking at something else
-                if (pickupPromptText != null)
+                if (pickupPromptText != null && pickupPromptText.activeSelf)
                 {
                     pickupPromptText.SetActive(false);
                 }
@@ -122,34 +103,21 @@ public class CashPickUpPlace : MonoBehaviour
         else
         {
             // Nothing in range of the raycast
-            if (pickupPromptText != null)
+            if (pickupPromptText != null && pickupPromptText.activeSelf)
             {
                 pickupPromptText.SetActive(false);
             }
         }
     }
 
-    private void CheckObjectMovement()
+    private void SpawnCash()
     {
-        // Skip if no object is assigned to track
-        if (objectToTrack == null)
-            return;
-
-        // Check if the object has moved beyond the threshold
-        float movementDistance = Vector3.Distance(objectToTrack.position, lastObjectPosition);
-
-        if (movementDistance > movementThreshold && !objectHasMoved)
+        // Show the cash on the table when cigarettes are placed
+        if (cashOnTable != null)
         {
-            // Object has moved, make the cash visible
-            objectHasMoved = true;
-            if (cashOnTable != null)
-            {
-                cashOnTable.SetActive(true);
-            }
+            cashOnTable.SetActive(true);
         }
-
-        // Update the last position for the next frame
-        lastObjectPosition = objectToTrack.position;
+        cashSpawned = true;
     }
 
     private void PickUpCash()
@@ -174,6 +142,13 @@ public class CashPickUpPlace : MonoBehaviour
         {
             pickupPromptText.SetActive(false);
         }
+
+        // Optional: Disable collider to prevent further interaction
+        Collider col = GetComponent<Collider>();
+        if (col != null)
+        {
+            col.enabled = false;
+        }
     }
 
     // Public method for the placement script to check
@@ -182,9 +157,9 @@ public class CashPickUpPlace : MonoBehaviour
         return isHoldingCash;
     }
 
-    // Public method for the placement script to call when cash is placed
-    public void CashPlaced()
+    // Public method for other scripts that might need to know if cash was picked up permanently
+    public bool IsCashPickedUpPermanently()
     {
-        isHoldingCash = false;
+        return cashPickedUpPermanently;
     }
 }
