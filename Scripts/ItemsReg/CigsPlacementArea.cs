@@ -7,8 +7,9 @@ public class CigsPlacementArea : MonoBehaviour
     public GameObject cigsOnPlayer;
     public float interactionDistance = 5f;
     public Collider placementCollider;
-
     public AudioClip VoiceActing;
+
+    private AudioSource audioSource;
 
     [Header("Events")]
     public FuelPumpInteraction connectedFuelPump;
@@ -24,6 +25,13 @@ public class CigsPlacementArea : MonoBehaviour
     {
         playerCamera = Camera.main;
         cigsPickUpScript = FindObjectOfType<CigsPickUp>();
+
+        // Get or add AudioSource component
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
 
         // Use this object's collider if none specified
         if (placementCollider == null)
@@ -105,6 +113,13 @@ public class CigsPlacementArea : MonoBehaviour
 
     private void PlaceCigs()
     {
+        // Play the voice acting audio
+        if (VoiceActing != null && audioSource != null)
+        {
+            audioSource.clip = VoiceActing;
+            audioSource.Play();
+        }
+
         if (!IsHoldingCigs())
             return;
 
@@ -136,13 +151,5 @@ public class CigsPlacementArea : MonoBehaviour
 
         // Set flag that cigs have been placed
         cigsPlaced = true;
-
-        AudioSource audioSource = GetComponent<AudioSource>();
-        if (audioSource != null && VoiceActing != null)
-        {
-            audioSource.clip = VoiceActing;
-            audioSource.Play();
-        }
-
     }
 }

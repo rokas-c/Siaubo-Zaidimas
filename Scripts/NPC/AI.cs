@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -11,7 +9,7 @@ public class AI : MonoBehaviour
 {
     NavMeshAgent nm;
     Rigidbody rb;
-    Animator animator; // Changed from Animation to Animator
+    Animator animator;
     public Transform Target;
     public Transform[] WayPoints;
     public int Cur_WayPoints;
@@ -20,16 +18,29 @@ public class AI : MonoBehaviour
     [SerializeField]
     private float cur_timer;
 
+    // Reference to the model to hide
+    [SerializeField]
+    private GameObject modelToHide;
+
+    // Flag to check if we're at the last waypoint
+    private bool isAtLastWaypoint = false;
+
     void Start()
     {
         nm = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>(); // Initialize the Animator component
+        animator = GetComponent<Animator>();
 
         rb.freezeRotation = true;
 
         Target = WayPoints[Cur_WayPoints];
         cur_timer = PauseTimer;
+
+        // If modelToHide isn't set, use this gameObject
+        if (modelToHide == null)
+        {
+            modelToHide = gameObject;
+        }
     }
 
     void Update()
@@ -40,7 +51,6 @@ public class AI : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, Target.position);
 
-
         //Move to Waypoint
         if (distance > stop_distance && WayPoints.Length > 0)
         {
@@ -48,8 +58,6 @@ public class AI : MonoBehaviour
             animator.SetBool("IsIdle", false);
             //Find Waypoint
             Target = WayPoints[Cur_WayPoints];
-
-            Debug.Log("Hello");
         }
         else if (distance <= stop_distance && WayPoints.Length > 0)
         {
@@ -58,6 +66,13 @@ public class AI : MonoBehaviour
                 cur_timer -= 0.01f;
                 animator.SetBool("IsMoving", false);
                 animator.SetBool("IsIdle", true);
+
+                // Check if we're at the last waypoint
+                if (Cur_WayPoints == WayPoints.Length - 1 && !isAtLastWaypoint)
+                {
+                    isAtLastWaypoint = true;
+                    HideModel();
+                }
             }
             if (cur_timer <= 0)
             {
@@ -65,6 +80,8 @@ public class AI : MonoBehaviour
                 if (Cur_WayPoints >= WayPoints.Length)
                 {
                     Cur_WayPoints = 0;
+                    // Reset the flag when we start a new cycle
+                    isAtLastWaypoint = false;
                 }
                 Target = WayPoints[Cur_WayPoints];
                 cur_timer = PauseTimer;
@@ -72,5 +89,22 @@ public class AI : MonoBehaviour
         }
 
         nm.SetDestination(Target.position);
+    }
+
+    // Hide the model
+    private void HideModel()
+    {
+        // Check for renderer components
+        Renderer[] renderers = modelToHide.GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers)
+        {
+            renderer.enabled = false;
+        }
+
+        // Optionally disable the animator to stop animations
+        if (animator != null)
+        {
+            animator.enabled = false;
+        }
     }
 }

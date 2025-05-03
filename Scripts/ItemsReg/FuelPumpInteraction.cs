@@ -10,6 +10,8 @@ public class FuelPumpInteraction : MonoBehaviour
     [Header("Audio")]
     public AudioSource pumpAudioSource;
 
+    public AudioSource VoiceActing;
+
     private bool isPlayerNearby = false;
     private bool hasBeenUsed = false;
     private bool isInteractionEnabled = false;
@@ -27,9 +29,11 @@ public class FuelPumpInteraction : MonoBehaviour
         // Get main camera reference once
         mainCamera = Camera.main;
 
+        if (VoiceActing == null)
+            VoiceActing = GetComponent<AudioSource>();
         // Setup audio source if needed
         if (pumpAudioSource == null)
-            pumpAudioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
+            pumpAudioSource = GetComponent<AudioSource>();
 
         // Find cigarette placement script
         cigsPlacementScript = FindObjectOfType<CigsPlacementArea>();
@@ -64,9 +68,6 @@ public class FuelPumpInteraction : MonoBehaviour
 
         Ray ray = mainCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 
-        // Debug visualization
-        Debug.DrawRay(ray.origin, ray.direction * interactionDistance, Color.red);
-
         // Check if raycast hits this object
         if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance, interactionLayer))
             return hit.collider.gameObject == gameObject;
@@ -83,6 +84,9 @@ public class FuelPumpInteraction : MonoBehaviour
 
         if (interactionPrompt != null)
             interactionPrompt.SetActive(false);
+
+        if (VoiceActing != null && !VoiceActing.isPlaying)
+            VoiceActing.Play();
     }
 
     // Trigger zone detection for proximity-based interaction
