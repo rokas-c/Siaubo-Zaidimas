@@ -39,10 +39,7 @@ public class AI : MonoBehaviour
         if (modelToHide == null)
         {
             modelToHide = gameObject;
-            Debug.Log("No model specified to hide, using this gameObject");
         }
-
-        Debug.Log("AI script initialized. Last waypoint index: " + (WayPoints.Length - 1));
     }
 
     void Update()
@@ -68,7 +65,6 @@ public class AI : MonoBehaviour
 
             if (isLastWaypoint && !hasReachedLastWaypoint)
             {
-                Debug.Log("Reached last waypoint! Hiding model now.");
                 HideModel();
                 hasReachedLastWaypoint = true;
             }
@@ -90,8 +86,6 @@ public class AI : MonoBehaviour
                 }
                 Target = WayPoints[Cur_WayPoints];
                 cur_timer = PauseTimer;
-
-                Debug.Log("Moving to waypoint index: " + Cur_WayPoints);
             }
         }
 

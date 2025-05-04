@@ -5,15 +5,15 @@ using UnityEngine;
 public class BroomJumpscareTrigger : MonoBehaviour
 {
     [Header("Sound Settings")]
-    [SerializeField] private AudioClip jumpscareSound; // Single sound for the jumpscare
-    [SerializeField] private float minDelayAfterBroomPlacement = 3f; // Minimum delay before jumpscare
-    [SerializeField] private float maxDelayAfterBroomPlacement = 10f; // Maximum delay before jumpscare
-    [SerializeField] private float volumeScale = 1f; // Volume multiplier for the sound
+    public AudioClip jumpscareSound; // Single sound for the jumpscare
+    public float minDelayAfterBroomPlacement = 3f; // Minimum delay before jumpscare
+    public float maxDelayAfterBroomPlacement = 10f; // Maximum delay before jumpscare
+    public float volumeScale = 1f; // Volume multiplier for the sound
 
     [Header("Jumpscare Settings")]
-    [SerializeField] private GameObject jumpscareModelPrefab; // Jumpscare character to spawn
-    [SerializeField] private Transform jumpscareSpawnPosition; // Where to spawn the jumpscare model
-    [SerializeField] private GameObject jumpscareColliderObject; // Collider to enable for jumpscare trigger
+    public GameObject jumpscareModelPrefab; // Jumpscare character to spawn
+    public Transform jumpscareSpawnPosition; // Where to spawn the jumpscare model
+    public GameObject jumpscareColliderObject; // Collider to enable for jumpscare trigger
 
     private AudioSource audioSource;
     private bool jumpscareTriggered = false;
