@@ -25,7 +25,9 @@ public class JumpscareController : MonoBehaviour
 
     public Transform scaryModelTeleportLocation; // Where to teleport the jumpscare model
 
-    public Collider colliderToEnable; // Collider to enable during jumpscare
+    [Header("Model Management")]
+    public GameObject[] modelsToEnable; // Models to enable during jumpscare
+    public GameObject[] modelsToDisable; // Models to disable during jumpscare
 
     private AudioSource audioSource;
     private PlayerMovement playerMovement;
@@ -62,12 +64,6 @@ public class JumpscareController : MonoBehaviour
 
         // Create fade panel if it doesn't exist
         CreateFadePanel();
-
-        // Make sure the collider is disabled at start if assigned
-        if (colliderToEnable != null)
-        {
-            colliderToEnable.enabled = false;
-        }
 
         // Store original model position and rotation if available
         if (scaryModel != null)
@@ -286,18 +282,15 @@ public class JumpscareController : MonoBehaviour
         // Disable player movement
         playerMovement.enabled = false;
 
-        // Enable the collider if assigned
-        if (colliderToEnable != null)
-        {
-            colliderToEnable.enabled = true;
-        }
-
         // Play sound effect if available
         if (audioSource != null && jumpscareSound != null)
         {
             audioSource.Play();
             StartCoroutine(PlayVoiceActingAfterJumpscareSound());
         }
+
+        // Toggle models
+        ToggleModels();
 
         // Make model dark if using darkness effect
         if (useDarknessEffect)
@@ -452,6 +445,33 @@ public class JumpscareController : MonoBehaviour
         {
             audioSource.clip = audioClip;
             audioSource.Play();
+        }
+    }
+
+    private void ToggleModels()
+    {
+        // Enable all target models
+        if (modelsToEnable != null && modelsToEnable.Length > 0)
+        {
+            foreach (GameObject model in modelsToEnable)
+            {
+                if (model != null)
+                {
+                    model.SetActive(true);
+                }
+            }
+        }
+
+        // Disable all target models
+        if (modelsToDisable != null && modelsToDisable.Length > 0)
+        {
+            foreach (GameObject model in modelsToDisable)
+            {
+                if (model != null)
+                {
+                    model.SetActive(false);
+                }
+            }
         }
     }
 

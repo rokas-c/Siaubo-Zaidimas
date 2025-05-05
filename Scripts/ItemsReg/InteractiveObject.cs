@@ -16,14 +16,20 @@ public class InteractiveObject : MonoBehaviour
     public float interactionDelay = 0f;
     public AudioSource interactionSound;
 
-    [Header("Model Disable")]
-    public GameObject modelToDisable;
+    // New option to play sound independently from this object
+    public bool playSoundIndependently = true;
+
+    [Header("Model Selection")]
+    public GameObject[] modelsToEnable;
+    public GameObject[] modelsToDisable;
+
 
     // Private variables
     private Camera mainCamera;
     private bool isLookingAtObject = false;
     private bool hasInteracted = false;
     private Coroutine delayCoroutine = null;
+    private static GameObject soundPlayerObject;
 
     private void Awake()
     {
@@ -33,18 +39,28 @@ public class InteractiveObject : MonoBehaviour
         {
             col.isTrigger = true;
         }
-        else
-        {
-            Debug.LogError("InteractiveObject requires a Collider component!");
-        }
 
         // Disable UI prompt initially
         if (uiPrompt != null)
             uiPrompt.SetActive(false);
 
-        // Add AudioSource if not already present
+        // Add AudioSource if not already present and none is assigned
         if (interactionSound == null)
             interactionSound = GetComponent<AudioSource>();
+
+        // Create global sound player if needed
+        EnsureSoundPlayerExists();
+    }
+
+    private void EnsureSoundPlayerExists()
+    {
+        // Create a persistent sound player object if it doesn't exist
+        if (soundPlayerObject == null)
+        {
+            soundPlayerObject = new GameObject("InteractionSoundPlayer");
+            DontDestroyOnLoad(soundPlayerObject);
+            soundPlayerObject.AddComponent<AudioSource>();
+        }
     }
 
     private void Start()
@@ -117,11 +133,8 @@ public class InteractiveObject : MonoBehaviour
 
     private IEnumerator InteractWithDelay()
     {
-        // Play sound instantly (if any)
-        if (interactionSound != null && interactionSound.clip != null)
-        {
-            interactionSound.Play();
-        }
+        // Play sound before anything else happens
+        PlayInteractionSound();
 
         // Wait only for the rest of the logic
         if (interactionDelay > 0)
@@ -134,6 +147,24 @@ public class InteractiveObject : MonoBehaviour
         delayCoroutine = null;
     }
 
+    private void PlayInteractionSound()
+    {
+        if (interactionSound != null && interactionSound.clip != null)
+        {
+            if (playSoundIndependently)
+            {
+                // Play the sound on our persistent object
+                AudioSource globalSource = soundPlayerObject.GetComponent<AudioSource>();
+                globalSource.PlayOneShot(interactionSound.clip, interactionSound.volume);
+            }
+            else
+            {
+                // Play on this object's AudioSource
+                interactionSound.Play();
+            }
+        }
+    }
+
     private void FinishInteraction()
     {
         if (oneTimeInteraction)
@@ -142,9 +173,32 @@ public class InteractiveObject : MonoBehaviour
             HideUI();
         }
 
-        if (modelToDisable != null)
+        ToggleModels();
+    }
+
+    private void ToggleModels()
+    {
+        if (modelsToEnable != null)
         {
-            modelToDisable.SetActive(false);
+            foreach (GameObject model in modelsToEnable)
+            {
+                if (model != null)
+                {
+                    model.SetActive(true);
+                }
+            }
+        }
+
+        // Disable all target models
+        if (modelsToDisable != null)
+        {
+            foreach (GameObject model in modelsToDisable)
+            {
+                if (model != null)
+                {
+                    model.SetActive(false);
+                }
+            }
         }
     }
 
